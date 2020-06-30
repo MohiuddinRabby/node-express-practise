@@ -21,7 +21,7 @@ const users = ['testUser1', 'testUser2', 'testUser3'];
 app.get('/users/:id', (req, res) => {
     const userID = req.params.id;
     const userName = users[userID];
-    res.send(userName);
+    res.send({userName,userID});
 
 })
 app.listen(port, () => console.log("listening to port: ${port}"));

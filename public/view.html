@@ -7,5 +7,13 @@
 </head>
 <body>
     <h1>This is view page</h1>
+    <p id="user">
+
+    </p>
+    <script>
+        fetch('http://localhost:3005/users/2')
+        .then(res=>res.json())
+        .then(data=>console.log(data))
+    </script>
 </body>
 </html>
