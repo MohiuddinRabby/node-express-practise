@@ -1,12 +1,14 @@
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const app = express();
 const port = 3005;
 //express.static set static dir
 app.use(express.static('public'))
 // cors use to open get ports publicly or securely(in other ways)
 app.use(cors());
-//
+//parse application json
+app.use(bodyParser.json())
 app.get('/', (req, res) => {
     res.send('Hello express,nodemon installed');
 });
@@ -24,7 +26,10 @@ const users = ['testUser1', 'testUser2', 'testUser3'];
 app.get('/users/:id', (req, res) => {
     const userID = req.params.id;
     const userName = users[userID];
-    res.send({userName,userID});
+    res.send({ userName, userID });
 })
-
+//
+app.post('/addUser', (req, res) => {
+    console.log('data received', req.body)
+})
 app.listen(port, () => console.log("listening to port: ${port}"));
