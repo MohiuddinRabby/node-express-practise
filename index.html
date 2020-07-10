@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>This is Client Node-mongo</h1>
+      <p id="product"></p>
+      <p id="success-msg" style="color: green; display: none;">
+        Product added to database
+      </p>
+      <form>
+        <input type="text" id="productName" placeholder="product name" />
+        <br />
+        <br />
+        <input type="number" id="productPrice" placeholder="price" />
+        <br />
+        <br />
+        <input type="number" id="productQty" placeholder="quantity" />
+        <br />
+        <br />
+        <button id="addproduct">Submit</button>
+      </form>
+      <br />
+      <br />
+      <ul id="product-data"></ul>
+    </div>
+    <script>
+      //get data
+      fetch("http://localhost:3005/products")
+        .then((res) => res.json())
+        .then((data) => displayProducts(data));
+      //display products details
+      function displayProducts(data) {
+        const productContainer = document.getElementById("product-data");
+        for (let i = 0; i < data.length; i++) {
+          const element = data[i];
+          const products = document.createElement("li");
+          products.innerText = `Name: ${element.name} || Price:$ ${element.price} || Stock: ${element.qty}`;
+          productContainer.appendChild(products);
+        }
+      }
+      //post data
+      const addProduct = document.getElementById("addproduct");
+      addProduct.addEventListener("click", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("productName").value;
+        const price = document.getElementById("productPrice").value;
+        const qty = document.getElementById("productQty").value;
+        const productDetails = { name, price, qty };
+        console.log(productDetails);
+        fetch("http://localhost:3005/addProduct", {
+          method: "POST",
+          body: JSON.stringify(productDetails),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+          .then((response) => response.json())
+          .then((json) => {
+            updateProduct(json);
+            document.getElementById("productName").value = "";
+            document.getElementById("productPrice").value = "";
+            document.getElementById("productQty").value = "";
+          });
+
+        function updateProduct(data) {
+          const successMsg = document.getElementById("success-msg");
+          successMsg.style.display = "block";
+          setTimeout(() => {
+            successMsg.style.display = "none";
+          }, 3000);
+        }
+      });
+    </script>
+  </body>
+</html>
