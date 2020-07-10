@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const MongoClient = require('mongodb').MongoClient;
+require('dotenv').config()
 const app = express();
 const port = 3005;
 //express.static set static dir
@@ -9,27 +11,53 @@ app.use(express.static('public'))
 app.use(cors());
 //parse application json
 app.use(bodyParser.json())
+const dbName = process.env.DB_USER;
+const dbPass = process.env.DB_PASS;
+const uri = process.env.DB_PATH;
+let client = new MongoClient(uri, { useNewUrlParser: true });
+
+const users = ['testUser1', 'testUser2', 'testUser3'];
+//database connection 
+//
 app.get('/', (req, res) => {
     res.send('Hello express,nodemon installed');
 });
-app.get('/fruit', (req, res) => {
-    const fruit = {
-        name: ['mango', 'orange', 'banana', 'apple', 'lichi'],
-        price: [10, 15, 5, 4, 2]
-    }
-    res.send(fruit);
-})
-// app.get('/users/:id',(req,res)=>{
-//     console.log(req.params);
-// })
-const users = ['testUser1', 'testUser2', 'testUser3'];
-app.get('/users/:id', (req, res) => {
-    const userID = req.params.id;
-    const userName = users[userID];
-    res.send({ userName, userID });
+//all porduct api
+app.get('/products', (req, res) => {
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("shop").collection("devices");
+        // perform actions on the collection object
+        console.log('mongo connected')
+        collection.find().toArray((err, documents) => {
+            if (err) {
+                console.log('error', err);
+            } else {
+                res.send(documents);
+                console.log('data inserted')
+            }
+        });
+        client.close();
+    });
+});
+app.post('/addProduct', (req, res) => {
+    const product = req.body;
+    console.log(product)
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("shop").collection("devices");
+        // perform actions on the collection object
+        console.log('mongo connected')
+        collection.insertOne(product, (err, result) => {
+            if (err) {
+                console.log('error', err);
+            } else {
+                res.send(result.ops[0]);
+                console.log('data inserted')
+            }
+        });
+        client.close();
+    });
 })
 //
-app.post('/addUser', (req, res) => {
-    console.log('data received', req.body)
-})
 app.listen(port, () => console.log("listening to port: ${port}"));
