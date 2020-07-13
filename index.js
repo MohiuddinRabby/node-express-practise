@@ -48,7 +48,7 @@ app.post('/addProduct', (req, res) => {
         const collection = client.db("shop").collection("devices");
         // perform actions on the collection object
         console.log('mongo connected')
-        collection.insertOne(product, (err, result) => {
+        collection.insert(product, (err, result) => {
             if (err) {
                 console.log('error', err);
             } else {
@@ -59,5 +59,30 @@ app.post('/addProduct', (req, res) => {
         client.close();
     });
 })
-//
+//find product
+app.get('/product/:key',(req,res)=>{
+    const key = req.params.key;
+    //
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("shop").collection("devices");
+        // perform actions on the collection object
+        console.log('mongo connected')
+        collection.find({key}).toArray((err, documents) => {
+            if (err) {
+                console.log('error', err);
+            } else {
+                res.send(documents[0]);
+                console.log('data inserted')
+            }
+        });
+        client.close();
+    });
+
+})
+
+
+//delete
+//update
+//post
 app.listen(port, () => console.log(`listening to port: ${port}`));
