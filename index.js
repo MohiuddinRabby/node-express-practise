@@ -80,7 +80,27 @@ app.get('/product/:key',(req,res)=>{
     });
 
 })
+//
+app.post('/getProductsByKey',(req,res)=>{
+    const key = req.params.key;
+    const productKeys = req.body;
+    console.log(productKeys)
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("shop").collection("devices");
+        // perform actions on the collection object
+        console.log('mongo connected')
+        collection.find({key:{$in:productKeys}}).toArray((err, documents) => {
+            if (err) {
+                console.log('error', err);
+            } else {
+                res.send(documents);
+            }
+        });
+        client.close();
+    });
 
+})
 
 //delete
 //update
