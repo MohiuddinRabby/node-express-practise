@@ -60,7 +60,7 @@ app.post('/addProduct', (req, res) => {
     });
 })
 //find product
-app.get('/product/:key',(req,res)=>{
+app.get('/product/:key', (req, res) => {
     const key = req.params.key;
     //
     client = new MongoClient(uri, { useNewUrlParser: true });
@@ -68,7 +68,7 @@ app.get('/product/:key',(req,res)=>{
         const collection = client.db("shop").collection("devices");
         // perform actions on the collection object
         console.log('mongo connected')
-        collection.find({key}).toArray((err, documents) => {
+        collection.find({ key }).toArray((err, documents) => {
             if (err) {
                 console.log('error', err);
             } else {
@@ -80,8 +80,8 @@ app.get('/product/:key',(req,res)=>{
     });
 
 })
-//
-app.post('/getProductsByKey',(req,res)=>{
+//product details
+app.post('/getProductsByKey', (req, res) => {
     const key = req.params.key;
     const productKeys = req.body;
     console.log(productKeys)
@@ -90,7 +90,7 @@ app.post('/getProductsByKey',(req,res)=>{
         const collection = client.db("shop").collection("devices");
         // perform actions on the collection object
         console.log('mongo connected')
-        collection.find({key:{$in:productKeys}}).toArray((err, documents) => {
+        collection.find({ key: { $in: productKeys } }).toArray((err, documents) => {
             if (err) {
                 console.log('error', err);
             } else {
@@ -101,7 +101,26 @@ app.post('/getProductsByKey',(req,res)=>{
     });
 
 })
+//order place
+app.post('/placeOrder', (req, res) => {
+    const orderDetails = req.body;
+    orderDetails.orderTime = new Date();
+    console.log('order sended',orderDetails)
+    //
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("shop").collection("orders");
+        collection.insertOne(orderDetails, (err, result) => {
+            if (err) {
+                console.log('error', err);
+            } else {
+                res.send(result.ops[0])
+            }
+        });
+        client.close();
+    });
 
+})
 //delete
 //update
 //post
