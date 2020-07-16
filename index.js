@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 require('dotenv').config()
 const app = express();
-const port = 3005;
 //express.static set static dir
 app.use(express.static('public'))
 // cors use to open get ports publicly or securely(in other ways)
@@ -124,4 +123,5 @@ app.post('/placeOrder', (req, res) => {
 //delete
 //update
 //post
+const port = process.env.PORT || 3005;
 app.listen(port, () => console.log(`listening to port: ${port}`));
